@@ -1,0 +1,38 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.button-nav {
+    background-color: var(--color-brown);
+    color: var(--color-white);
+    border: none;
+}
+
+.button-nav:hover {
+    background-color: var(--color-brown);
+    text-decoration: underline;
+}
+
+.button-invisible {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.button-nav a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.button-nav a:hover {
+    text-decoration: underline;
+}
