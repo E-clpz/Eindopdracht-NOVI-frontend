@@ -1,0 +1,40 @@
+.intro-text {
+    max-width: 420px;
+}
+
+.logo {
+    padding-right: 40px;
+}
+.steps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.step {
+    border: 1px solid var(--color-black);
+    background: var(--color-sand);
+    color: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.step-box {
+    color: white;
+    width: 105px;
+    height: 60px;
+    flex-shrink: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
