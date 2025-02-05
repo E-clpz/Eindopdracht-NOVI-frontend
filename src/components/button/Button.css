@@ -2,23 +2,28 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
+    color: var(--color-white);
+    border-style: solid;
+    border-width: 1px;
+    max-width: 100px;
+    padding: 10px;
     border-radius: 25px;
     font-weight: bold;
-    border: none;
     cursor: pointer;
     text-decoration: none;
 }
 
-.button-nav {
+.button-primary {
     background-color: var(--color-brown);
-    color: var(--color-white);
     border: none;
 }
 
-.button-nav:hover {
-    background-color: var(--color-brown);
-    text-decoration: underline;
+.button-secondary {
+    background-color: var(--color-orange-light);
+}
+
+.button-tertiary {
+    background-color: var(--color-orange-dark);
 }
 
 .button-invisible {
@@ -26,6 +31,9 @@
     border: none;
     padding: 0;
     cursor: pointer;
+}
+.button:hover {
+    text-decoration: underline;
 }
 
 .button-nav a {

@@ -1,8 +1,7 @@
 import './Contact.css';
-import logoBig from '../../assets/Logo MaatjesMatch Big.png';
 
 function Contact() {
-    return (<>
+    return <>
         <header className="header outer-container">
             <div className="header inner-container">
                 <h1>Dit is de Contactpagina</h1>
@@ -14,7 +13,7 @@ function Contact() {
 
             </div>
         </section>
-    </>);
+    </>
 }
 
 export default Contact;

@@ -1,7 +1,36 @@
+.upper-section {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--color-orange-light);
+  width: 100%;
+  max-width: 3000px;
+}
+
+.logo {
+  width: 250px;
+}
+
+.lower-section {
+  background: var(--color-orange-dark);
+  width: 100%;
+  max-width: 3000px;
+  color: white;
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.lower-section-h2 {
+  color: var(--color-black);
+  padding: 20px;
+}
+
 .footer {
   background-color: var(--color-brown);
   color: var(--color-black);
   text-align: center;
-  padding: 32px 0;
+  padding: 30px 0;
   font-weight: 600;
 }

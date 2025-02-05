@@ -24,7 +24,7 @@ function Navigation() {
                         <Button
                             type="button"
                             variant="primary"
-                            className={`button-nav ${location.pathname === '/' ? 'active' : ''}`}
+                            className={`button-primary ${location.pathname === '/' ? 'active' : ''}`}
                             onClick={() => navigate('/')}
                         >
                             Home
@@ -34,7 +34,7 @@ function Navigation() {
                         <Button
                             type="button"
                             variant="primary"
-                            className={`button-nav ${location.pathname === '/contact' ? 'active' : ''}`}
+                            className={`button-primary ${location.pathname === '/contact' ? 'active' : ''}`}
                             onClick={() => navigate('/contact')}
                         >
                             Contact
@@ -44,8 +44,8 @@ function Navigation() {
                         <Button
                             type="button"
                             variant="primary"
-                            className={`button-nav ${location.pathname === '/login' ? 'active' : ''}`}
-                            onClick={() => navigate('/login')}
+                            className={`button-primary ${location.pathname === '/signIn' ? 'active' : ''}`}
+                            onClick={() => navigate('/signIn')}
                         >
                             Inloggen
                         </Button>
@@ -54,8 +54,8 @@ function Navigation() {
                         <Button
                             type="button"
                             variant="primary"
-                            className={`button-nav ${location.pathname === '/signin' ? 'active' : ''}`}
-                            onClick={() => navigate('/signin')}
+                            className={`button-primary ${location.pathname === '/signUp' ? 'active' : ''}`}
+                            onClick={() => navigate('/signUp')}
                         >
                             Inschrijven
                         </Button>
