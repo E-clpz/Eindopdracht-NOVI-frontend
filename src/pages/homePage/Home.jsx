@@ -13,15 +13,15 @@ function Home() {
                 </div>
             </section>
             <section className="lower-section">
-                <h2 className="lower-section-h2">Zo werkt het:</h2>
                 <div className="steps">
+                    <h2 className="lower-section-h2">Zo werkt het:</h2>
                     <div className="step">
                         <span className="step-box" style={{backgroundImage: `url(${BigArrow})`}}>Stap 1</span>
-                        <p>Klik op de knop inschrijven en maak een account aan als maatje of aanbieder.</p>
+                        <p>Klik op de knop inschrijven en maak een account aan als Maatje of Aanvrager.</p>
                     </div>
                     <div className="step">
                         <span className="step-box" style={{backgroundImage: `url(${BigArrow})`}}>Stap 2</span>
-                        <p>Log in als Maatje of als Aanbieder en blader door de verschillende hulpvragen.</p>
+                        <p>Log in als Maatje of als Aanvrager en blader door de verschillende hulpvragen.</p>
                     </div>
                     <div className="step">
                         <span className="step-box" style={{backgroundImage: `url(${BigArrow})`}}>Stap 3</span>
@@ -34,7 +34,7 @@ function Home() {
                     </div>
                 </div>
             </section>
-            </>
+    </>
 }
 
 export default Home;

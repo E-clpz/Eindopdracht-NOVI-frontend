@@ -1,0 +1,34 @@
+.requests-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--color-black);
+}
+
+input, select, textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--color-black);
+    border-radius: 5px;
+}
+
+textarea {
+    resize: vertical;
+    max-height: 150px;
+}
+
+.file-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+}

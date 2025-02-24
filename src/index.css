@@ -1,16 +1,30 @@
 :root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-orange-light);
   --color-black: #000000;
   --color-brown: #813405;
   --color-orange-dark: #d45113;
   --color-orange-light: #f9a03f;
   --color-sand: #f8dda4;
   --color-white: #FFFFFF;
+
+}
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+main {
+  flex-grow: 1;
 }
 
 body {

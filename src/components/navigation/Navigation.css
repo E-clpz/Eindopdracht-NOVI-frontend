@@ -4,7 +4,6 @@
 }
 
 .nav-inner-container {
-    max-width: 3000px;
     flex-shrink: 1;
     flex-grow: 0;
     margin: 0 20px;

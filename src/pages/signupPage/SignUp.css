@@ -21,7 +21,6 @@
 .signup-form form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
     width: 50%;
 }
 
@@ -32,25 +31,28 @@
     gap: 10px;
 }
 
-.rules {
-    margin-left: 20px;
+.signup-rules {
+    margin-left: 40px;
     text-align: left;
-    width: 70%;
+    width: 50%;
 }
 
-.rules h2 {
-    margin-bottom: 10px;
+.signup-rules h2 {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
 }
 
-.rules ol {
+.signup-rules ol {
     margin-left: 20px;
 }
 
-.rules Button {
-    margin-top: 20px;
+.signup-rules ol li {
+    margin-bottom: 15px;
 }
 
-.lower-section {
-    padding: 80px;
-    background-color: var(--color-orange-light);
+.signup-rules Button {
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
 }
