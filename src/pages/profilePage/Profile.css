@@ -1,0 +1,25 @@
+/* src/pages/profilePage/Profile.css */
+
+.profile-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-container h2 {
+    text-align: center;
+    font-size: 24px;
+}
+
+.profile-details {
+    margin-top: 20px;
+}
+
+.profile-details p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.profile-details strong {
+    font-weight: bold;
+}

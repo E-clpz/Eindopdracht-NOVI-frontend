@@ -1,34 +1,85 @@
-.requests-form {
+.upper-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
-label {
-    font-weight: bold;
-    font-size: 16px;
+.requests-form {
+    background-color: var(--color-sand);
+    padding: 30px;
+    border-radius: 25px;
+    border: 1px solid var(--color-black);
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.requests-form label {
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 18px;
     color: var(--color-black);
 }
 
-input, select, textarea {
+.requests-form input,
+.requests-form select,
+.requests-form textarea {
+    width: 100%;
     padding: 10px;
-    font-size: 14px;
-    border: 1px solid var(--color-black);
     border-radius: 5px;
+    border: 1px solid var(--color-black);
+    font-size: 16px;
 }
 
-textarea {
-    resize: vertical;
-    max-height: 150px;
+.requests-form select {
+    height: 40px;
+}
+
+.requests-form textarea {
+    height: 100px;
 }
 
 .file-upload-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+}
+
+.file-upload-container input[type="file"] {
+    display: none;
+}
+
+.file-upload-container img {
+    cursor: pointer;
+    width: 20px;
+    margin-left: 10px;
+}
+
+.file-upload-container span {
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.file-upload-container img:last-child {
+    margin-left: 20px;
+}
+
+.error-message,
+.success-message {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px;
 }
 
 .error-message {
-    color: red;
-    font-size: 14px;
+    color: var(--color-brown);
+}
+
+.success-message {
+    color: var(--color-orange-dark);
 }

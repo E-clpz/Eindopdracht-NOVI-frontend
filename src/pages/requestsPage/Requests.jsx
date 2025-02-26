@@ -1,23 +1,38 @@
 import { useState } from "react";
-import Button from "../components/button/Button.jsx";
+import Button from "../../components/button/Button.jsx";
 import "./Requests.css";
-import attachFileIcon from "../assets/attach_file.png";
-import trashCanIcon from "../assets/Trash Can.png";
+import attachFileIcon from "../../assets/attach_file.png";
+import trashCanIcon from "../../assets/Trash Can.png";
 import ErrorMessage from "../../components/errorMessage/ErrorMessage.jsx";
+import axios from "axios";
 
 function Requests() {
-    const [category, setCategory] = useState("");
-    const [preferredDate, setPreferredDate] = useState("");
-    const [dateError, setDateError] = useState("");
+    const [formData, setFormData] = useState({
+        category: "",
+        preferredDate: "",
+        description: "",
+        title: "",
+        city: "",
+    });
+
     const [file, setFile] = useState(null);
-    const [description, setDescription] = useState("");
     const [formError, setFormError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [dateError, setDateError] = useState("");
 
     const categories = ["Boodschappen", "Vervoer", "Gezelschap", "Overig"];
 
-    const handleFileChange = (event) => {
-        const selectedFile = event.target.files[0];
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
         if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) {
             setFile(selectedFile);
         } else {
@@ -25,8 +40,8 @@ function Requests() {
         }
     };
 
-    const handleDateChange = (event) => {
-        const selectedDate = new Date(event.target.value);
+    const handleDateChange = (e) => {
+        const selectedDate = new Date(e.target.value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -34,57 +49,80 @@ function Requests() {
             setDateError("De datum mag niet in het verleden liggen.");
         } else {
             setDateError("");
-            setPreferredDate(event.target.value);
+            setFormData((prevData) => ({
+                ...prevData,
+                preferredDate: e.target.value,
+            }));
         }
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setFormError("");
         setSuccessMessage("");
 
-        if (!category || !preferredDate || !description) {
+        if (!formData.category || !formData.preferredDate || !formData.description || !formData.title || !formData.city) {
             setFormError("Alle velden zijn verplicht.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("category", category);
-        formData.append("preferredDate", preferredDate);
-        formData.append("description", description);
+        let requestData = new FormData();
+        requestData.append("category", formData.category);
+        requestData.append("preferredDate", formData.preferredDate);
+        requestData.append("description", formData.description);
+        requestData.append("title", formData.title);
+        requestData.append("city", formData.city);
         if (file) {
-            formData.append("file", file);
+            requestData.append("file", file);
         }
 
+        const token = localStorage.getItem("token");
+
         try {
-            const response = await fetch("http://localhost:8080/api/requests", {
-                method: "POST",
-                body: formData,
+            const response = await axios.post("http://localhost:8080/api/requests", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
             });
 
-            if (!response.ok) {
+            if (response.status !== 201) {
                 throw new Error("Fout bij het indienen van de hulpvraag.");
             }
 
             setSuccessMessage("Hulpvraag succesvol ingediend!");
-            setCategory("");
-            setPreferredDate("");
+            setFormData({
+                category: "",
+                preferredDate: "",
+                description: "",
+                title: "",
+                city: "",
+            });
             setFile(null);
-            setDescription("");
         } catch (error) {
             setFormError(error.message);
         }
     };
 
     return (
-        <main className="upper-section">
-            <h2>Hulpvraag indienen</h2>
+        <section className="upper-section">
+            <h1>Hulpvraag indienen</h1>
             <form onSubmit={handleSubmit} className="requests-form">
                 {formError && <ErrorMessage message={formError} />}
                 {successMessage && <p className="success-message">{successMessage}</p>}
                 <label>
+                    Titel *
+                    <input
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
                     Categorie *
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+                    <select name="category" value={formData.category} onChange={handleChange} required>
                         <option value="" disabled>Kies een categorie</option>
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>{cat}</option>
@@ -92,12 +130,21 @@ function Requests() {
                     </select>
                 </label>
                 <label>
+                    Stad *
+                    <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
                     Voorkeursdatum *
                     <input
                         type="date"
-                        id="preferredDate"
                         name="preferredDate"
-                        value={preferredDate}
+                        value={formData.preferredDate}
                         onChange={handleDateChange}
                         required
                     />
@@ -116,14 +163,15 @@ function Requests() {
                     Beschrijving (max 250 tekens)
                     <textarea
                         maxLength="250"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
                         required
                     />
                 </label>
-                <Button type="submit" className="primary-button">Hulpvraag indienen</Button>
+                <Button type="submit" className="button-secondary">Hulpvraag indienen</Button>
             </form>
-        </main>
+        </section>
     );
 }
 
