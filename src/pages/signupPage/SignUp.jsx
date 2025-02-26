@@ -13,7 +13,7 @@ const SignUp = () => {
         email: "",
         phoneNumber: "",
         password: "",
-        role: "REQUESTER",
+        role: "",
     });
 
     const [error, setError] = useState("");
@@ -104,7 +104,7 @@ const SignUp = () => {
                                 verwijderd.
                             </li>
                             <li>
-                                Het is wettelijk verboden deze app voor illegale doeleinden te gebruiken.
+                                Het is verboden deze app voor illegale doeleinden te gebruiken.
                                 Bij schending van deze regel kunnen de autoriteiten worden ingeschakeld.
                             </li>
                             <p>Door je in te schrijven ga je akkoord met bovenstaande huisregels.</p>

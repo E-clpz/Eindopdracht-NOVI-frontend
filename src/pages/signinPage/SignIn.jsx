@@ -5,6 +5,7 @@ import Button from "../../components/button/Button.jsx";
 import "./SignIn.css";
 import logo from "../../assets/Logo MaatjesMatch Big.png";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -14,23 +15,22 @@ const SignIn = () => {
         password: "",
     });
 
+    const [success, setSuccess] = useState("");
+
     const [error, setError] = useState("");
 
     function handleChange(e) {
         const { name, value } = e.target;
-        console.log(e);
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
-
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSuccess("")
         setError("");
-
-        console.log("Verstuurde gegevens:", formData);
 
         try {
             const response = await axios.post("http://localhost:8080/auth/login", {
@@ -38,21 +38,24 @@ const SignIn = () => {
                 password: formData.password,
             });
 
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("role", response.data.role);
+            const token = response.headers["authorization"];
 
-            if (response.data.role === "HELPER") {
+            if (token) {
+                const bearerToken = token.startsWith("Bearer ") ? token.split(" ")[1] : token;
+                localStorage.setItem("token", bearerToken);
+
+                const decodedToken = jwtDecode(bearerToken);
+                const role = decodedToken.roles ? decodedToken.roles[0] : 'undefined';
+                localStorage.setItem("role", role);
+
                 navigate("/requests");
             } else {
-                navigate("/dashboard");
+                setError("Geen token ontvangen, probeer opnieuw.");
             }
-        } catch (err) {
 
-            if (err.response && err.response.data) {
-                setError(err.response.data.message || "Inloggen mislukt.");
-            } else {
-                setError("Er is iets misgegaan. Probeer het later opnieuw.");
-            }
+        } catch (error) {
+            console.error("❌ Fout bij inloggen:", error);
+            setError("Ongeldige inloggegevens");
         }
     };
 
@@ -65,10 +68,11 @@ const SignIn = () => {
             <section className="lower-section">
                 <article className="signin-form">
                     <form onSubmit={handleSubmit}>
-                        <Input label="Gebruikersnaam of e-mail:" type="text" name="identifier" required value={formData.identifier} onChange={handleChange} />
+                        <Input label="Gebruikersnaam of e-mail:" type="text" name="identifier" required value={formData.identifier} onChange={(e) => handleChange(e)} />
                         <Input label="Wachtwoord:" type="password" name="password" required value={formData.password} onChange={(e) => handleChange(e)} />
                         <a href="/wachtwoord-vergeten" className="forgot-password">Wachtwoord vergeten?</a>
                         {error && <p className="error-message">{error}</p>}
+                        {success && <p className="success-message">{success}</p>}
                         <Button type="submit" variant="secondary">Inloggen</Button>
                     </form>
                 </article>

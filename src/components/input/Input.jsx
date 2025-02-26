@@ -1,10 +1,11 @@
 import "./Input.css";
 
-const Input = ({ label, name, type, required }) => {
+const Input = ({ onChange, label, name, type, required }) => {
     return (
         <label className="input-label">
             {label} {required && "*"}
             <input
+                onChange={onChange}
                 name={name}
                 type={type}
                 required={required}
