@@ -1,0 +1,33 @@
+.nav-outer-container {
+    background-color: var(--color-sand);
+    padding: 8px 0;
+}
+
+.nav-inner-container {
+    flex-shrink: 1;
+    flex-grow: 0;
+    margin: 0 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-title {
+    flex-basis: 100px;
+    max-width: 300px;
+}
+
+.nav-links {
+    list-style: none;
+    flex-basis: 3000px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.nav-links li .active {
+    text-decoration: underline;
+    color: var(--color-orange-light);
+}

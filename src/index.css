@@ -1,0 +1,69 @@
+:root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-orange-light);
+  --color-black: #000000;
+  --color-brown: #813405;
+  --color-orange-dark: #d45113;
+  --color-orange-light: #f9a03f;
+  --color-sand: #f8dda4;
+  --color-white: #FFFFFF;
+
+}
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+main {
+  flex-grow: 1;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+h1 {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 32px;
+}
+
+h2 {
+  font-family: inherit;
+  font-size: 24px;
+}
+
+h3 {
+  font-family: inherit;
+  font-size: 20px;
+}
+
+p {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+a:active {
+  color: inherit;
+}

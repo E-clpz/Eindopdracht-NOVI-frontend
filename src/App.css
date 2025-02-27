@@ -1,0 +1,35 @@
+.logo {
+  width: 250px;
+}
+
+.upper-section {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--color-orange-light);
+  width: 100%;
+}
+
+.lower-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--color-orange-dark);
+  width: 100%;
+}
+
+.lower-section-h2 {
+  color: var(--color-black);
+  padding: 20px;
+}
+
+.footer {
+  background-color: var(--color-brown);
+  color: var(--color-black);
+  text-align: center;
+  padding: 30px;
+  font-weight: 600;
+}

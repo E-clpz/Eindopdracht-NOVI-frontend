@@ -1,0 +1,18 @@
+.not-found-section {
+    background-color: var(--color-orange-dark);
+    color: white;
+    min-height: 84vh;
+    text-align: center;
+}
+
+.not-found-section h1 {
+    color: var(--color-black);
+    font-size: 200px;
+    margin-bottom: 15px;
+}
+
+.not-found-section h2 {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+}
