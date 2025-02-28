@@ -65,16 +65,6 @@ function Requests() {
             return;
         }
 
-        let requestData = new FormData();
-        requestData.append("category", formData.category);
-        requestData.append("preferredDate", formData.preferredDate);
-        requestData.append("description", formData.description);
-        requestData.append("title", formData.title);
-        requestData.append("city", formData.city);
-        if (file) {
-            requestData.append("file", file);
-        }
-
         const token = localStorage.getItem("token");
 
         try {
@@ -99,7 +89,11 @@ function Requests() {
             });
             setFile(null);
         } catch (error) {
-            setFormError(error.message);
+            if (error.response && error.response.status === 403) {
+                setFormError("Als maatje kan je geen hulpvraag indienen");
+            } else {
+                setFormError(error.message);
+            }
         }
     };
 
@@ -107,8 +101,6 @@ function Requests() {
         <section className="upper-section">
             <h1>Hulpvraag indienen</h1>
             <form onSubmit={handleSubmit} className="requests-form">
-                {formError && <ErrorMessage message={formError} />}
-                {successMessage && <p className="success-message">{successMessage}</p>}
                 <label>
                     Titel *
                     <input
@@ -168,6 +160,8 @@ function Requests() {
                         required
                     />
                 </label>
+                {formError && <ErrorMessage message={formError} />}
+                {successMessage && <p className="success-message">{successMessage}</p>}
                 <Button type="submit" className="button-secondary">Hulpvraag indienen</Button>
             </form>
         </section>

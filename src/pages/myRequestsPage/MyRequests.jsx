@@ -110,6 +110,7 @@ const MyRequests = () => {
             await axios.put(`http://localhost:8080/api/requests/${id}`, updatedRequest, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
                 },
             });
             alert("Hulpvraag bijgewerkt!");

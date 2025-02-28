@@ -29,15 +29,6 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const formData = {
-            username: e.target.username.value,
-            city: e.target.city.value,
-            email: e.target.email.value,
-            phoneNumber: e.target.phoneNumber.value,
-            password: e.target.password.value,
-            role: e.target.role.value,
-        };
-
         try {
             const response = await fetch("http://localhost:8080/api/users", {
                 method: "POST",
@@ -53,8 +44,8 @@ const SignUp = () => {
             }
 
             navigate("/signin");
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            setError(error.message);
         }
     };
 
@@ -89,6 +80,7 @@ const SignUp = () => {
                                 Ik ben een maatje
                             </label>
                         </fieldset>
+                        <Button type="submit" variant="secondary">Inschrijven</Button>
                         {error && <p className="error-message">{error}</p>}
                     </form>
                     <aside className="signup-rules">
@@ -107,7 +99,6 @@ const SignUp = () => {
                             </li>
                             <p>Door je in te schrijven ga je akkoord met bovenstaande huisregels.</p>
                         </ol>
-                        <Button type="submit" variant="secondary">Inschrijven</Button>
                     </aside>
                 </article>
             </section>
