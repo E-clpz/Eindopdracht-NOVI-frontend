@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/button/Button.jsx";
 import "./Requests.css";
 import attachFileIcon from "../../assets/attach_file.png";
@@ -55,6 +56,8 @@ function Requests() {
         }
     };
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormError("");
@@ -80,6 +83,7 @@ function Requests() {
             }
 
             setSuccessMessage("Hulpvraag succesvol ingediend!");
+
             setFormData({
                 category: "",
                 preferredDate: "",
@@ -88,6 +92,9 @@ function Requests() {
                 city: "",
             });
             setFile(null);
+
+            navigate("/requests/myrequests");
+
         } catch (error) {
             if (error.response && error.response.status === 403) {
                 setFormError("Als maatje kan je geen hulpvraag indienen");

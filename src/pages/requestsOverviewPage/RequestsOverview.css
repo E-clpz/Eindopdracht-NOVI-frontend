@@ -1,4 +1,31 @@
-.request-list {
+.upper-section {
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.filters {
+    display: flex;
+    gap: 20px;
+    margin: 20px;
+}
+
+.filters select,
+.filters input {
+    padding: 10px;
+    border-radius: 5px;
+    border: solid 1px var(--color-black);
+    background-color: var(--color-sand);
+}
+
+.filters select {
+    max-width: 150px;
+}
+
+.filters input {
+    width: 200px;
+}
+
+.requests-list {
     list-style: none;
     width: 100%;
     max-width: 1000px;
@@ -20,6 +47,7 @@
     color: var(--color-black);
     font-weight: bold;
     width: 100%;
+    cursor: pointer;
 }
 
 .request-summary-title {
@@ -38,39 +66,21 @@
 }
 
 .request-details {
-
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.request-details label {
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-}
-
-.request-details input,
-.request-details textarea,
-.request-details select {
     padding: 10px;
-    border-radius: 5px;
-    border: solid 1px var(--color-black);
-    background-color: var(--color-sand);
-    width: 100%;
-    max-width: 400px;
-    margin-top: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
-.request-details textarea {
-    min-height: 80px;
+.accepted-message {
+    color: green;
+    font-weight: bold;
 }
 
-.request-details img {
-    margin-top: 5px;
-    width: 24px;
-    height: 24px;
+.button-primary:disabled {
+    cursor: not-allowed;
 }
 
 .pagination {
@@ -90,18 +100,10 @@
 .pagination button:disabled {
     cursor: not-allowed;
 }
-.update-message {
-    color: green;
-    font-weight: bold;
-}
 
 .pagination img {
     width: 24px;
     height: 24px;
-}
-
-button {
-    border: none;
 }
 
 .aside-buttons {

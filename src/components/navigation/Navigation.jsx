@@ -32,10 +32,10 @@ function Navigation() {
                         <Button
                             type="button"
                             variant="primary"
-                            className={`button-primary ${location.pathname === '/contact' ? 'active' : ''}`}
-                            onClick={() => navigate('/contact')}
+                            className={`button-primary ${location.pathname === '/profile' ? 'active' : ''}`}
+                            onClick={() => navigate('/profile')}
                         >
-                            Contact
+                            Profiel
                         </Button>
                     </li>
                     <li>

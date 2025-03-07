@@ -48,13 +48,17 @@ const SignIn = () => {
                 const role = decodedToken.roles ? decodedToken.roles[0] : 'undefined';
                 localStorage.setItem("role", role);
 
-                navigate("/requests");
+                if (role === "ROLE_REQUESTER") {
+                    navigate("/requests/myrequests");
+                } else if (role === "ROLE_HELPER") {
+                    navigate("/requests/overview");
+                }
             } else {
                 setError("Geen token ontvangen, probeer opnieuw.");
             }
 
         } catch (error) {
-            console.error("❌ Fout bij inloggen:", error);
+            console.error("Fout bij inloggen:", error);
             setError("Ongeldige inloggegevens");
         }
     };
@@ -70,7 +74,6 @@ const SignIn = () => {
                     <form onSubmit={handleSubmit}>
                         <Input label="Gebruikersnaam of e-mail:" type="text" name="identifier" required value={formData.identifier} onChange={(e) => handleChange(e)} />
                         <Input label="Wachtwoord:" type="password" name="password" required value={formData.password} onChange={(e) => handleChange(e)} />
-                        <a href="/wachtwoord-vergeten" className="forgot-password">Wachtwoord vergeten?</a>
                         {error && <p className="error-message">{error}</p>}
                         {success && <p className="success-message">{success}</p>}
                         <Button type="submit" variant="secondary">Inloggen</Button>

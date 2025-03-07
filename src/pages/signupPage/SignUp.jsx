@@ -39,8 +39,16 @@ const SignUp = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Registratie mislukt.");
+                let errorMessage = "Registratie mislukt.";
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
+                } catch {
+                    if (response.status === 400) {
+                        errorMessage = "E-mailadres is al in gebruik.";
+                    }
+                }
+                throw new Error(errorMessage);
             }
 
             navigate("/signin");

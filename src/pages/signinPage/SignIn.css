@@ -27,19 +27,6 @@
     width: 100%;
 }
 
-.forgot-password {
-    text-align: center;
-    display: block;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    color: var(--color-orange-dark);
-    text-decoration: none;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
 .error-message {
     color: var(--color-brown);
     font-size: 25px;
