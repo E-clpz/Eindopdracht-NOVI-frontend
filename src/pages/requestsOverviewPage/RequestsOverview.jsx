@@ -41,6 +41,12 @@ const RequestsOverview = () => {
         fetchRequests();
     }, [acceptedRequests]);
 
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split("-");
+        return `${day}-${month}-${year}`;
+    };
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
@@ -78,11 +84,13 @@ const RequestsOverview = () => {
                 [id]: true
             }));
 
-            setRequests((prevRequests) => prevRequests.map((request) =>
-                request.id === id
-                    ? { ...request, status: 'Geaccepteerd' }
-                    : request
-            ));
+            setRequests((prevRequests) =>
+                prevRequests.map((request) =>
+                    request.id === id
+                        ? { ...request, status: 'Geaccepteerd' }
+                        : request
+                )
+            );
 
         } catch (error) {
             console.error("Er is een fout opgetreden:", error);
@@ -123,7 +131,7 @@ const RequestsOverview = () => {
                                 <span
                                     className="request-summary-status"><strong>Status:</strong> {request.status}</span>
                                 <span
-                                    className="request-summary-date"><strong>Datum:</strong> {request.preferredDate}</span>
+                                    className="request-summary-date"><strong>Voorkeursdatum:</strong> {formatDate(request.preferredDate)}</span>
                             </button>
                             {expandedRequest === request.id && (
                                 <div className="request-details">
@@ -132,8 +140,8 @@ const RequestsOverview = () => {
                                     <p><strong>Datum:</strong> {new Date(request.preferredDate).toLocaleDateString()}</p>
                                     <p><strong>Beschrijving:</strong> {request.description}</p>
                                     {acceptedRequests[request.id] &&
-                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen.</p>}
-                                    {request.status !== 'Geaccepteerd' && (
+                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen. Je contactgegevens zijn gedeeld met de aanvrager.</p>}
+                                    {request.status === 'Open' && !acceptedRequests[request.id] && (
                                         <Button className="button-primary" onClick={() => handleAcceptRequest(request.id)}
                                                 disabled={acceptedRequests[request.id]}>
                                             Accepteer hulpvraag

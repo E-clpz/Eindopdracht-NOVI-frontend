@@ -53,6 +53,9 @@ const SignIn = () => {
                 } else if (role === "ROLE_HELPER") {
                     navigate("/requests/overview");
                 }
+                else if (role === "ROLE_ADMIN") {
+                    navigate("/requests/overview");
+                }
             } else {
                 setError("Geen token ontvangen, probeer opnieuw.");
             }
@@ -72,7 +75,7 @@ const SignIn = () => {
             <section className="lower-section">
                 <article className="signin-form">
                     <form onSubmit={handleSubmit}>
-                        <Input label="Gebruikersnaam of e-mail:" type="text" name="identifier" required value={formData.identifier} onChange={(e) => handleChange(e)} />
+                        <Input label="Gebruikersnaam:" type="text" name="identifier" required value={formData.identifier} onChange={(e) => handleChange(e)} />
                         <Input label="Wachtwoord:" type="password" name="password" required value={formData.password} onChange={(e) => handleChange(e)} />
                         {error && <p className="error-message">{error}</p>}
                         {success && <p className="success-message">{success}</p>}

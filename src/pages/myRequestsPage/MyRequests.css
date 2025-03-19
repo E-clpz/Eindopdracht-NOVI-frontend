@@ -19,26 +19,21 @@
     background: var(--color-sand);
     color: var(--color-black);
     font-weight: bold;
-    width: 100%;
 }
 
 .request-summary-title {
-    flex: 1;
     text-align: left;
 }
 
 .request-summary-status {
     text-align: center;
-    flex: 1;
 }
 
 .request-summary-date {
     text-align: right;
-    flex: 1;
 }
 
 .request-details {
-
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -49,6 +44,7 @@
     display: flex;
     flex-direction: column;
     text-align: left;
+    width: 50%;
 }
 
 .request-details input,
@@ -90,9 +86,19 @@
 .pagination button:disabled {
     cursor: not-allowed;
 }
+
 .update-message {
     color: green;
     font-weight: bold;
+}
+
+.review-message {
+    color: green;
+    font-weight: bold;
+}
+
+.error-message {
+    color: var(--color-brown);
 }
 
 .pagination img {
@@ -105,8 +111,5 @@ button {
 }
 
 .aside-buttons {
-    display: flex;
-    align-self: flex-start;
-    margin-top: 10px;
     gap: 60px;
 }

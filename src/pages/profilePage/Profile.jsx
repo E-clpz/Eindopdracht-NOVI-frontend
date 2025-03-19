@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Profile.css";
 import Button from "../../components/button/Button.jsx";
+import starFilled from "../../assets/Star filled.png";
+import starUnfilled from "../../assets/Star unfilled.png";
 
 function Profile() {
     const [userInfo, setUserInfo] = useState({
@@ -11,9 +13,12 @@ function Profile() {
         phoneNumber: "",
         city: "",
         role: "",
+        rating: null,
     });
+
+    const [updateFlag, setUpdateFlag] = useState(false);
     const navigate = useNavigate();
-    const [errors, setErrors] = useState({});
+    const [errorMessage, setErrorMessage] = useState({});
     const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
@@ -29,26 +34,48 @@ function Profile() {
                 setUserInfo({
                     username: response.data.username,
                     email: response.data.email,
-                    phoneNumber: response.data.phoneNumber || "",
-                    city: response.data.city || "",
+                    phoneNumber: response.data.phoneNumber,
+                    city: response.data.city,
                     id: response.data.id,
-                    role: response.data.role || "",
+                    role: response.data.role,
+                    rating: response.data.role === "HELPER"
+                        ? response.data.rating : null,
                 });
+
             } catch (error) {
                 console.error("Fout bij ophalen gebruikersinformatie", error);
             }
         };
-
         fetchUserInfo();
-    }, []);
+
+    }, [updateFlag]);
 
     const validateInput = () => {
         const newErrors = {};
 
-        if (!userInfo.username.trim()) newErrors.username = "Gebruikersnaam is verplicht.";
-        if (!userInfo.email.trim()) newErrors.email = "E-mail is verplicht.";
+        if (!userInfo.username.trim()) {
+            newErrors.username = "Gebruikersnaam is verplicht.";
+        } else if (userInfo.username.length < 2 || userInfo.username.length > 25) {
+            newErrors.username = "Gebruikersnaam moet tussen 2 en 25 tekens lang zijn.";
+        }
 
-        setErrors(newErrors);
+        if (!userInfo.email.trim()) {
+            newErrors.email = "E-mail is verplicht.";
+        } else if (!userInfo.email.includes('@')) {
+            newErrors.email = "Ongeldig e-mailadres. E-mailadres moet een '@' bevatten.";
+        }
+
+        if (!userInfo.phoneNumber.trim()) {
+            newErrors.phoneNumber = "Telefoonnummer is verplicht.";
+        } else if (!/^\d{10}$/.test(userInfo.phoneNumber)) {
+            newErrors.phoneNumber = "Telefoonnummer moet precies 10 cijfers bevatten.";
+        }
+
+        if (!userInfo.city.trim()) {
+            newErrors.city = "Woonplaats is verplicht.";
+        }
+
+        setErrorMessage(Object.keys(newErrors).length > 0 ? newErrors : "");
         return Object.keys(newErrors).length === 0;
     };
 
@@ -64,7 +91,7 @@ function Profile() {
         const updatedUserInfo = { ...userInfo };
 
         try {
-            await axios.put(`http://localhost:8080/api/users/${userInfo.id}`, updatedUserInfo, {
+            await axios.put("http://localhost:8080/api/users/my", updatedUserInfo, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -72,6 +99,9 @@ function Profile() {
             });
 
             setSuccessMessage("Profiel succesvol bijgewerkt!");
+            setErrorMessage("");
+            setUpdateFlag((prev) => !prev);
+
             const response = await axios.get("http://localhost:8080/api/users/my", {
                 headers: {
                     "Content-Type": "application/json",
@@ -82,15 +112,27 @@ function Profile() {
             setUserInfo({
                 username: response.data.username,
                 email: response.data.email,
-                phoneNumber: response.data.phoneNumber || "",
-                city: response.data.city || "",
+                phoneNumber: response.data.phoneNumber,
+                city: response.data.city,
                 id: response.data.id,
-                role: response.data.role || "",
+                rating: response.data.role === "HELPER" && response.data.rating != null
+                    ? response.data.rating
+                    : null,
             });
 
         } catch (error) {
             console.error("Fout bij updaten van profiel", error);
-            setErrors({ general: "Kan profiel niet bijwerken. Controleer of e-mail of gebruikersnaam uniek is." });
+            if (error.response) {
+                if (error.response.status === 409) {
+                    setErrorMessage({ general: "E-mailadres, gebruikersnaam of telefoonnummer is al in gebruik." });
+                } else {
+                    const serverErrors = error.response.data.errors || {};
+                    setErrorMessage(serverErrors);
+                }
+            } else {
+                setErrorMessage({ general: "Er is een onbekende fout opgetreden." });
+            }
+            setSuccessMessage("");
         }
     };
 
@@ -109,22 +151,43 @@ function Profile() {
                 <form onSubmit={handleSubmit} className="profile-form">
                     <label>Gebruikersnaam:</label>
                     <input type="text" name="username" value={userInfo.username} onChange={handleChange} />
-                    {errors.username && <span className="error">{errors.username}</span>}
+                    {errorMessage.username && <span className="error">{errorMessage.username}</span>}
 
                     <label>E-mail:</label>
                     <input type="email" name="email" value={userInfo.email} onChange={handleChange} />
-                    {errors.email && <span className="error">{errors.email}</span>}
+                    {errorMessage.email && <span className="error">{errorMessage.email}</span>}
 
                     <label>Telefoonnummer:</label>
                     <input type="text" name="phoneNumber" value={userInfo.phoneNumber} onChange={handleChange} />
+                    {errorMessage.phoneNumber && <span className="error">{errorMessage.phoneNumber}</span>}
 
                     <label>Woonplaats:</label>
                     <input type="text" name="city" value={userInfo.city} onChange={handleChange} />
+                    {errorMessage.city && <span className="error">{errorMessage.city}</span>}
 
-                    {errors.general && <span className="error">{errors.general}</span>}
-                    {successMessage && <span className="success">{successMessage}</span>}
+                    {errorMessage && <span className="error">{errorMessage.general}</span>}
+                    {!errorMessage && successMessage && <span className="success">{successMessage}</span>}
 
-                    <Button type="submit">Opslaan</Button>
+                    {userInfo.role === "HELPER" && (
+                        <div className="rating-section">
+                            <label>Jouw beoordeling:</label>
+                            {userInfo.rating === null ? (
+                                <p className="no-rating">Je hebt nog geen beoordeling ontvangen</p>
+                            ) : (
+                                <div className="rating-stars">
+                                    {Array.from({ length: 5 }, (_, index) => (
+                                        <img
+                                            key={index}
+                                            src={index < userInfo.rating ? starFilled : starUnfilled}
+                                            alt={index < userInfo.rating ? "Gevulde ster" : "Lege ster"}
+                                            className="star-icon"
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <Button type="submit">Wijzigingen opslaan</Button>
                 </form>
                 <Button type="button" onClick={handleNavigate}>
                     {userInfo.role === "HELPER" ? "Naar alle hulpvragen" : "Ga naar je hulpvragen"}

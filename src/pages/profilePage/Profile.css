@@ -1,7 +1,8 @@
 .profile-form {
     display: flex;
     flex-direction: column;
-    max-width: 400px;
+    min-width: 300px;
+    max-width: 500px;
     margin: 0 auto;
     background-color: var(--color-sand);
     padding: 30px;
