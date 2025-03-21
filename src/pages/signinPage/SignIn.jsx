@@ -53,9 +53,7 @@ const SignIn = () => {
                 } else if (role === "ROLE_HELPER") {
                     navigate("/requests/overview");
                 }
-                else if (role === "ROLE_ADMIN") {
-                    navigate("/requests/overview");
-                }
+
             } else {
                 setError("Geen token ontvangen, probeer opnieuw.");
             }

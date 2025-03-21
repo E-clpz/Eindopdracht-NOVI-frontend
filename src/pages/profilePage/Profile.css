@@ -16,6 +16,7 @@
 }
 
 .profile-form input {
+    background-color: var(--color-sand);
     padding: 10px;
     border: 1px solid var(--color-black);
     border-radius: 5px;
@@ -27,6 +28,8 @@
     color: var(--color-brown);
     font-size: 14px;
     margin-bottom: 10px;
+    background-color: transparent;
+    border: none;
 }
 
 .profile-form .success {

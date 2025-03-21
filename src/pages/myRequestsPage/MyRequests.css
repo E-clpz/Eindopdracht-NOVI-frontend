@@ -10,6 +10,7 @@
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 10px;
+    flex-shrink: 0;
 }
 
 .request-summary {
@@ -63,10 +64,100 @@
     min-height: 80px;
 }
 
-.request-details img {
-    margin-top: 5px;
-    width: 24px;
-    height: 24px;
+.helper-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.rating-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    text-align: center;
+}
+
+.rating-label select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.upload-file-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    width: 30px;
+    gap: 8px;
+}
+
+.upload-file-button img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.upload-file-text {
+    font-size: 16px;
+}
+
+.upload-file-message {
+    color: green;
+    font-weight: bold;
+}
+
+.delete-file-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    width: 30px;
+    gap: 8px;
+}
+
+.delete-file-button img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.delete-file-text {
+    font-size: 16px;
+}
+
+.star-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.succes-message {
+    color: green;
+    font-weight: bold;
+}
+
+.error-message {
+    color: var(--color-brown);
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
 }
 
 .pagination {
@@ -87,20 +178,6 @@
     cursor: not-allowed;
 }
 
-.update-message {
-    color: green;
-    font-weight: bold;
-}
-
-.review-message {
-    color: green;
-    font-weight: bold;
-}
-
-.error-message {
-    color: var(--color-brown);
-}
-
 .pagination img {
     width: 24px;
     height: 24px;
@@ -108,8 +185,4 @@
 
 button {
     border: none;
-}
-
-.aside-buttons {
-    gap: 60px;
 }

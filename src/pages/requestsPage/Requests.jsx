@@ -165,18 +165,17 @@ function Requests() {
                         type="text"
                         name="title"
                         value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
                         required
                     />
-                    {formErrors.title && <ErrorMessage message={formErrors.title} />}
+                    {formErrors.title && <ErrorMessage message={formErrors.title}/>}
                 </label>
-
                 <label>
                     Categorie *
                     <select
                         name="category"
                         value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        onChange={(e) => setFormData({...formData, category: e.target.value})}
                         required
                     >
                         <option value="" disabled>Kies een categorie</option>
@@ -185,19 +184,17 @@ function Requests() {
                         ))}
                     </select>
                 </label>
-
                 <label>
                     Stad *
                     <input
                         type="text"
                         name="city"
                         value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        onChange={(e) => setFormData({...formData, city: e.target.value})}
                         required
                     />
-                    {formErrors.city && <ErrorMessage message={formErrors.city} />}
+                    {formErrors.city && <ErrorMessage message={formErrors.city}/>}
                 </label>
-
                 <label>
                     Voorkeursdatum *
                     <input
@@ -207,22 +204,51 @@ function Requests() {
                         onChange={handleDateChange}
                         required
                     />
-                    {dateError && <ErrorMessage message={dateError} />}
-                    {formErrors.preferredDate && <ErrorMessage message={formErrors.preferredDate} />}
+                    {dateError && <ErrorMessage message={dateError}/>}
+                    {formErrors.preferredDate && <ErrorMessage message={formErrors.preferredDate}/>}
                 </label>
-
                 <label className="file-upload">
-                    Bijlage (max 5MB)
                     <div className="file-upload-container">
-                        <input type="file" onChange={handleFileChange} />
-                        <img src={attachFileIcon} alt="Upload bestand" />
-                        {file && <span>{file.name}</span>}
-                        {file && <img src={trashCanIcon} alt="Verwijder bestand" onClick={() => setFile(null)} />}
+                        <img
+                            src={attachFileIcon}
+                            alt="Upload bestand"
+                            style={{ pointerEvents: "none" }}
+                        />
+                        <p
+                            className="file-upload-text">
+                        Bijlage toevoegen (max 5MB)
+                    </p>
                     </div>
-                    {formErrors.file && <ErrorMessage message={formErrors.file} />}
-                    {formErrors.general && <ErrorMessage message={formErrors.general} />}
+                    <input
+                        type="file"
+                        id="file-input"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
                 </label>
-
+                {file && (
+                    <span>
+                    {file.name.length > 40 ? file.name.slice(0, 40) + "..." : file.name}
+                </span>
+                )}
+                {file && (
+                    <div className="file-actions">
+                        <img
+                            src={trashCanIcon}
+                            alt="Verwijder bestand"
+                            onClick={() => {
+                                setFile(null);
+                                document.getElementById('file-input').value = "";
+                            }}
+                        />
+                        <p
+                            className="file-delete-text">
+                            Verwijder bestand
+                        </p>
+                    </div>
+                )}
+                {formErrors.file && <ErrorMessage message={formErrors.file} />}
+                {formErrors.general && <ErrorMessage message={formErrors.general} />}
                 <label>
                     Beschrijving (max 250 tekens)
                     <textarea
@@ -230,17 +256,17 @@ function Requests() {
                         maxLength="250"
                         name="description"
                         value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
                         required
                     />
-                    {formErrors.description && <ErrorMessage message={formErrors.description} />}
+                    {formErrors.description && <ErrorMessage message={formErrors.description}/>}
                 </label>
-
                 {successMessage && <p className="success-message">{successMessage}</p>}
                 <Button type="submit" className="button-secondary">Hulpvraag indienen</Button>
             </form>
         </section>
     );
+
 }
 
 export default Requests;

@@ -1,11 +1,23 @@
 import './Navigation.css';
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import LogoSmall from '../../assets/Logo MaatjesMatch Small.png';
 import Button from "../button/Button.jsx";
 
 function Navigation() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem("token"));
+    }, [location]);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+        navigate("/signIn");
+    };
 
     return (
         <nav className="nav-outer-container">
@@ -28,36 +40,53 @@ function Navigation() {
                             Home
                         </Button>
                     </li>
-                    <li>
-                        <Button
-                            type="button"
-                            variant="primary"
-                            className={`button-primary ${location.pathname === '/profile' ? 'active' : ''}`}
-                            onClick={() => navigate('/profile')}
-                        >
-                            Profiel
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            type="button"
-                            variant="primary"
-                            className={`button-primary ${location.pathname === '/signIn' ? 'active' : ''}`}
-                            onClick={() => navigate('/signIn')}
-                        >
-                            Inloggen
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            type="button"
-                            variant="primary"
-                            className={`button-primary ${location.pathname === '/signUp' ? 'active' : ''}`}
-                            onClick={() => navigate('/signUp')}
-                        >
-                            Inschrijven
-                        </Button>
-                    </li>
+                    {isLoggedIn ? (
+                        <>
+                            <li>
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    className={`button-primary ${location.pathname === '/profile' ? 'active' : ''}`}
+                                    onClick={() => navigate('/profile')}
+                                >
+                                    Profiel
+                                </Button>
+                            </li>
+                            <li>
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    className="button-primary"
+                                    onClick={handleLogout}
+                                >
+                                    Uitloggen
+                                </Button>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            <li>
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    className={`button-primary ${location.pathname === '/signIn' ? 'active' : ''}`}
+                                    onClick={() => navigate('/signIn')}
+                                >
+                                    Inloggen
+                                </Button>
+                            </li>
+                            <li>
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    className={`button-primary ${location.pathname === '/signUp' ? 'active' : ''}`}
+                                    onClick={() => navigate('/signUp')}
+                                >
+                                    Inschrijven
+                                </Button>
+                            </li>
+                        </>
+                    )}
                 </ul>
             </div>
         </nav>

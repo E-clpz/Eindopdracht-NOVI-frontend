@@ -29,8 +29,9 @@
 
 .error-message {
     color: var(--color-brown);
-    font-size: 25px;
-    margin-bottom: 10px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
 }
 
 .button {

@@ -120,6 +120,7 @@ const SignUp = () => {
             <section className="signup-content">
                 <article className="signup-form">
                     <form onSubmit={handleSubmit}>
+                        {formErrors.username && <p className="error-message">{formErrors.username}</p>}
                         <Input
                             label="Gebruikersnaam:"
                             type="text"
@@ -127,7 +128,7 @@ const SignUp = () => {
                             value={formData.username}
                             onChange={handleChange}
                         />
-                        {formErrors.username && <p className="error-message">{formErrors.username}</p>}
+                        {formErrors.password && <p className="error-message">{formErrors.password}</p>}
                         <Input
                             label="Wachtwoord:"
                             type="password"
@@ -135,15 +136,15 @@ const SignUp = () => {
                             value={formData.password}
                             onChange={handleChange}
                         />
-                        {formErrors.password && <p className="error-message">{formErrors.password}</p>}
+                        {formErrors.email && <p className="error-message">{formErrors.email}</p>}
                         <Input
-                            label="E-mail adres:"
+                            label="E-mailadres:"
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                         />
-                        {formErrors.email && <p className="error-message">{formErrors.email}</p>}
+                        {formErrors.phoneNumber && <p className="error-message">{formErrors.phoneNumber}</p>}
                         <Input
                             label="Tel.nr:"
                             type="tel"
@@ -151,7 +152,7 @@ const SignUp = () => {
                             value={formData.phoneNumber}
                             onChange={handleChange}
                         />
-                        {formErrors.phoneNumber && <p className="error-message">{formErrors.phoneNumber}</p>}
+                        {formErrors.city && <p className="error-message">{formErrors.city}</p>}
                         <Input
                             label="Woonplaats:"
                             type="text"
@@ -159,7 +160,6 @@ const SignUp = () => {
                             value={formData.city}
                             onChange={handleChange}
                         />
-                        {formErrors.city && <p className="error-message">{formErrors.city}</p>}
                         <fieldset>
                             <legend>Rol:</legend>
                             <label>
@@ -201,7 +201,7 @@ const SignUp = () => {
                             <li>
                                 Het is verboden deze app voor illegale doeleinden te gebruiken. Bij schending van deze regel kunnen de autoriteiten worden ingeschakeld.
                             </li>
-                            <p>Door je in te schrijven ga je akkoord met bovenstaande huisregels.</p>
+                            <p><i>Door je in te schrijven ga je akkoord met bovenstaande huisregels.</i></p>
                         </ol>
                     </aside>
                 </article>

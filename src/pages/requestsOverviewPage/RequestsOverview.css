@@ -79,6 +79,13 @@
     font-weight: bold;
 }
 
+.error-message {
+    color: var(--color-brown);
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+}
+
 .button-primary:disabled {
     cursor: not-allowed;
 }

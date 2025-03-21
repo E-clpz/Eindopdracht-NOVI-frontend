@@ -15,11 +15,12 @@ const MyRequests = () => {
     const [expandedRequest, setExpandedRequest] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [files, setFiles] = useState({});
-    const [errors, setErrors] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [categories, setCategories] = useState([]);
     const requestsPerPage = 10;
     const [helperRatings, setHelperRatings] = useState({});
+    const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -29,7 +30,6 @@ const MyRequests = () => {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 });
-
                 setRequests(response.data);
 
                 const updatedFiles = {};
@@ -39,8 +39,8 @@ const MyRequests = () => {
                     }
                 });
                 setFiles(updatedFiles);
-            } catch (error) {
-                console.error("Fout bij ophalen van hulpvragen", error);
+            } catch {
+                setErrorMessage("Fout bij ophalen van hulpvragen.");
             }
         };
 
@@ -56,8 +56,8 @@ const MyRequests = () => {
                     },
                 });
                 setCategories(response.data);
-            } catch (error) {
-                console.error("Fout bij ophalen van categorieën", error);
+            } catch {
+                setErrorMessage("Fout bij ophalen van categorieën.");
             }
         };
 
@@ -65,11 +65,8 @@ const MyRequests = () => {
     }, []);
 
     const totalPages = Math.ceil(requests.length / requestsPerPage);
-
     const startIndex = (currentPage - 1) * requestsPerPage;
-
     const visibleRequests = requests.slice(startIndex, startIndex + requestsPerPage);
-
     const toggleExpand = (id) => {
         setExpandedRequest(expandedRequest === id ? null : id);
     };
@@ -85,14 +82,10 @@ const MyRequests = () => {
     };
 
     const handleUpdateRequest = async (id) => {
-
-        console.log("Alle requests:", requests);
-
-
         const updatedRequest = requests.find((req) => req.id === id);
 
         if (!updatedRequest) {
-            console.error("Request niet gevonden");
+            setErrorMessage("Request niet gevonden.");
             return;
         }
 
@@ -105,19 +98,17 @@ const MyRequests = () => {
             city: updatedRequest.city,
             preferredDate: updatedRequest.preferredDate,
         };
-        console.log(requestData);
-        console.log("Gevonden request:", updatedRequest);
+
         try {
             await axios.put(`http://localhost:8080/api/requests/${id}`, requestData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json",
                 },
             });
 
-            console.log("Hulpvraagtekst succesvol bijgewerkt.");
-        } catch (error) {
-            console.error("Fout bij bijwerken van hulpvraagtekst", error);
+            setSuccessMessage("Hulpvraag succesvol bijgewerkt.");
+        } catch {
+            setErrorMessage("Fout bij bijwerken van hulpvraagtekst.");
             return;
         }
 
@@ -133,45 +124,49 @@ const MyRequests = () => {
             try {
                 await axios.put(`http://localhost:8080/api/requests/${id}/file`, formData, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "multipart/form-data",
                     },
                 });
 
-                console.log("Bestand succesvol bijgewerkt.");
-            } catch (error) {
-                console.error("Fout bij bijwerken van bestand", error);
+                setRequests((prevRequests) => prevRequests.map((request) => request.id === id ? {
+                    ...request, fileUrl: updatedRequest.newFile ? updatedRequest.newFile.name : request.fileUrl,
+                } : request));
+
+                setSuccessMessage("Bestand succesvol bijgewerkt.");
+            } catch {
+                setErrorMessage("Fout bij bijwerken van bestand.");
                 return;
             }
         }
 
-        setSuccessMessage("Hulpvraag succesvol bijgewerkt!");
         setTimeout(() => setSuccessMessage(""), 5000);
     };
 
-
     const handleDeleteRequest = async (requestId) => {
-
         try {
             await axios.delete(`http://localhost:8080/api/requests/${requestId}`, {
-                headers:
-                    {Authorization: `Bearer ${localStorage.getItem("token")}`},
+                headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
             });
 
             setRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
-
-        } catch (error) {
-            console.error("Fout bij verwijderen van de hulpvraag", error);
+        } catch {
+            setErrorMessage("Fout bij verwijderen van de hulpvraag.");
         }
     };
 
     const handleTitleChange = (id, value) => {
+        setErrorMessage((prevErrors) => ({...prevErrors, [id]: {...prevErrors[id], title: ""}}));
+
         if (!value || value.trim() === "") {
-            setErrors((prevErrors) => ({
+            setErrorMessage((prevErrors) => ({
                 ...prevErrors, [id]: {...prevErrors[id], title: "Titel mag niet leeg zijn."},
             }));
+        } else if (value.trim().length < 3 || value.trim().length > 30) {
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors, [id]: {...prevErrors[id], title: "Titel moet tussen de 3 en 30 tekens bevatten."},
+            }));
         } else {
-            setErrors((prevErrors) => {
+            setErrorMessage((prevErrors) => {
                 const newErrors = {...prevErrors};
                 delete newErrors[id]?.title;
                 return newErrors;
@@ -181,31 +176,44 @@ const MyRequests = () => {
     };
 
     const handleDescriptionChange = (id, value) => {
-        if (value.length > 250) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                [id]: {...prevErrors[id], description: "De beschrijving mag niet meer dan 250 tekens bevatten."},
+        setErrorMessage((prevErrors) => ({
+            ...prevErrors, [id]: {...prevErrors[id], description: ""},
+        }));
+        if (!value || value.trim() === "") {
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors, [id]: {...prevErrors[id], description: "Beschrijving mag niet leeg zijn."},
             }));
-            return;
+        }
+        else if (value.trim().length < 10) {
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors,
+                [id]: { ...prevErrors[id], description: "Beschrijving moet minimaal 10 tekens bevatten." },
+            }));
+        } else if (value.trim().length > 250) {
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors,
+                [id]: {...prevErrors[id], description: "Beschrijving mag niet langer zijn dan 250 tekens."},
+            }));
+        } else {
+            setErrorMessage((prevErrors) => {
+                const newErrors = {...prevErrors};
+                delete newErrors[id]?.description;
+                return newErrors;
+            });
         }
         handleChange(id, "description", value);
-        setErrors((prevErrors) => {
-            const newErrors = {...prevErrors};
-            delete newErrors[id]?.description;
-            return newErrors;
-        });
     };
 
     const handleDateChange = (id, value) => {
         const currentDate = new Date().toISOString().split("T")[0];
         if (value < currentDate) {
-            setErrors((prevErrors) => ({
+            setErrorMessage((prevErrors) => ({
                 ...prevErrors, [id]: {...prevErrors[id], date: "De datum mag niet in het verleden liggen."},
             }));
             return;
         }
         handleChange(id, "preferredDate", value);
-        setErrors((prevErrors) => {
+        setErrorMessage((prevErrors) => {
             const newErrors = {...prevErrors};
             delete newErrors[id]?.date;
             return newErrors;
@@ -219,8 +227,16 @@ const MyRequests = () => {
     const handleFileChange = async (requestId, e) => {
         const selectedFiles = Array.from(e.target.files);
 
+        setErrorMessage((prevErrors) => ({
+            ...prevErrors, [requestId]: {...prevErrors[requestId], file: ""},
+        }));
+        setSuccessMessage('');
+
         if (files[requestId] && files[requestId].length > 0) {
-            setErrors("Er mag maar 1 bestand per aanvraag worden geüpload.");
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors,
+                [requestId]: {...prevErrors[requestId], file: "Er mag maar 1 bestand per aanvraag worden geüpload."},
+            }));
             return;
         }
 
@@ -228,22 +244,27 @@ const MyRequests = () => {
         const validFiles = [];
 
         selectedFiles.forEach((file) => {
-
             if (file.size <= 5 * 1024 * 1024) {
                 if (allowedTypes.includes(file.type)) {
                     validFiles.push(file);
                 } else {
-                    console.warn(`${file.name} heeft een onjuist bestandstype. Alleen afbeeldingen en PDF-bestanden zijn toegestaan.`);
-                    alert(`${file.name} heeft een onjuist bestandstype. Alleen afbeeldingen en PDF-bestanden zijn toegestaan.`);
+                    setErrorMessage((prevErrors) => ({
+                        ...prevErrors,
+                        [requestId]: {
+                            ...prevErrors[requestId],
+                            file: `${file.name} heeft een onjuist bestandstype. Alleen afbeeldingen en PDF-bestanden zijn toegestaan.`
+                        },
+                    }));
                 }
             } else {
-                console.warn(`${file.name} is te groot. Maximale grootte is 5MB.`);
-                alert(`${file.name} is te groot. Maximale grootte is 5MB.`);
+                setErrorMessage((prevErrors) => ({
+                    ...prevErrors,
+                    [requestId]: {...prevErrors[requestId], file: `${file.name} is te groot. Maximale grootte is 5MB.`},
+                }));
             }
         });
 
         if (validFiles.length > 0) {
-
             try {
                 const formData = new FormData();
                 validFiles.forEach((file) => {
@@ -252,25 +273,40 @@ const MyRequests = () => {
 
                 formData.append("requestId", requestId);
 
-
-                const response = await axios.put(`http://localhost:8080/api/requests/${requestId}/file`, formData, {
+                await axios.put(`http://localhost:8080/api/requests/${requestId}/file`, formData, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "multipart/form-data",
                     },
                 });
 
-                console.log("Bestand succesvol geüpload:", response.data);
-
                 setFiles((prevFiles) => ({
-                    ...prevFiles,
-                    [requestId]: validFiles,
+                    ...prevFiles, [requestId]: [...prevFiles[requestId] || [], ...validFiles],
                 }));
-            } catch (error) {
-                console.error("Fout bij het uploaden van bestand:", error.response || error);
+
+                setSuccessMessage("Bestand succesvol geüpload!");
+                setTimeout(() => setSuccessMessage(""), 5000);
+            } catch {
+                setErrorMessage((prevErrors) => ({
+                    ...prevErrors,
+                    [requestId]: {
+                        ...prevErrors[requestId],
+                        file: "Fout bij het uploaden van bestand. Probeer het opnieuw."
+
+                    },
+                }));
+                setTimeout(() => {
+                    setErrorMessage((prevErrors) => {
+                        const newErrors = { ...prevErrors };
+                        delete newErrors[requestId]?.file;
+                        return newErrors;
+                    });
+                }, 5000);
+
             }
         } else {
-            console.warn("Geen geldige bestanden om te uploaden.");
+            setErrorMessage((prevErrors) => ({
+                ...prevErrors, [requestId]: {...prevErrors[requestId], file: "Geen geldige bestanden om te uploaden."},
+            }));
         }
     };
 
@@ -282,27 +318,24 @@ const MyRequests = () => {
 
     const handleRatingChange = (requestId, rating) => {
         setHelperRatings((prevRatings) => ({
-            ...prevRatings,
-            [requestId]: rating,
+            ...prevRatings, [requestId]: rating,
         }));
     };
 
     const handleSubmitReview = async (requestId, helperId, requesterId) => {
-        console.log("handleSubmitReview aangeroepen met:", requestId, helperId, requesterId);
         if (!requestId || !helperId || !requesterId) {
-            console.error("Fout: requestId, helperId of requesterId ontbreekt", { requestId, helperId, requesterId });
-            alert("Er is een fout opgetreden. Probeer het opnieuw.");
+            setErrorMessage("Er is een fout opgetreden. Probeer het opnieuw.");
             return;
         }
 
         const rating = helperRatings[requestId];
 
         if (!rating) {
-            alert("Kies een beoordeling voordat je deze indient.");
+            setErrorMessage("Kies een beoordeling voordat je deze indient.");
             return;
         }
 
-        const reviewData = { rating, requestId, helperId, requesterId };
+        const reviewData = {rating, requestId, helperId, requesterId};
 
         try {
             await axios.post(`http://localhost:8080/api/reviews/requester/${requesterId}/helper/${helperId}`, reviewData, {
@@ -311,19 +344,16 @@ const MyRequests = () => {
                 },
             });
 
-            console.log("Verzonden reviewData:", reviewData);
-            alert("Beoordeling succesvol ingediend!");
-
-        } catch (error) {
-            console.error("Fout bij het indienen van de beoordeling:", error);
-            alert("Er is een fout opgetreden bij het indienen van je beoordeling.");
+            setSuccessMessage("Beoordeling succesvol ingediend!");
+            setReviewSubmitted(true);
+            setTimeout(() => setSuccessMessage(""), 5000);
+        } catch {
+            setErrorMessage("Er is een fout opgetreden bij het indienen van je beoordeling.");
         }
     };
 
     const handleFileDelete = async (requestId) => {
         try {
-            console.log("Verwijder bestand voor request ID:", requestId);
-
             const token = localStorage.getItem("token");
 
             const response = await axios.delete(`http://localhost:8080/api/requests/${requestId}/file`, {
@@ -333,18 +363,21 @@ const MyRequests = () => {
             });
 
             if (response.status === 200) {
-                console.log("Bestand succesvol verwijderd");
+                setFiles(prevFiles => ({
+                    ...prevFiles, [requestId]: []
+                }));
 
-                setRequests(prevRequests =>
-                    prevRequests.map(request =>
-                        request.id === requestId ? { ...request, fileUrl: null } : request
-                    )
-                );
+                setRequests(prevRequests => prevRequests.map(request => request.id === requestId ? {
+                    ...request, fileUrl: null
+                } : request));
+
+                setSuccessMessage("Bestand succesvol verwijderd!");
+                setTimeout(() => setSuccessMessage(""), 5000);
             } else {
-                console.error("Fout bij verwijderen bestand: ", response);
+                setErrorMessage("Fout bij verwijderen bestand.");
             }
-        } catch (error) {
-            console.error("Fout bij het verwijderen van bestand:", error);
+        } catch {
+            setErrorMessage("Fout bij het verwijderen van bestand.");
         }
     };
 
@@ -352,15 +385,15 @@ const MyRequests = () => {
             <section className="upper-section">
                 <h2 className="title">Mijn Hulpvragen</h2>
                 <ul className="request-list">
-                    {visibleRequests.map((request) => (
-                        <li key={request.id} className="request-item">
+                    {visibleRequests.map((request) => (<li key={request.id} className="request-item">
                             <button className="request-summary" onClick={() => toggleExpand(request.id)}>
                                 <span className="request-summary-title"><strong>Titel:</strong> {request.title}</span>
-                                <span className="request-summary-status"><strong>Status:</strong> {request.status}</span>
-                                <span className="request-summary-date"><strong>Voorkeursdatum:</strong> {formatDate(request.preferredDate)}</span>
+                                <span
+                                    className="request-summary-status"><strong>Status:</strong> {request.status}</span>
+                                <span
+                                    className="request-summary-date"><strong>Voorkeursdatum:</strong> {formatDate(request.preferredDate)}</span>
                             </button>
-                            {expandedRequest === request.id && (
-                                <div className="request-details">
+                            {expandedRequest === request.id && (<article className="request-details">
                                     <label>
                                         <strong>Titel:</strong>
                                         <input
@@ -369,7 +402,8 @@ const MyRequests = () => {
                                             onChange={(e) => handleTitleChange(request.id, e.target.value)}
                                             disabled={request.status === "Geaccepteerd" || request.status === "Gesloten"}
                                         />
-                                        {errors[request.id]?.title && <p className="error-message">{errors[request.id].title}</p>}
+                                        {errorMessage[request.id]?.title &&
+                                            <p className="error-message">{errorMessage[request.id].title}</p>}
                                     </label>
                                     <label>
                                         <strong>Beschrijving (max 250 tekens):</strong>
@@ -378,7 +412,8 @@ const MyRequests = () => {
                                             onChange={(e) => handleDescriptionChange(request.id, e.target.value)}
                                             disabled={request.status === "Geaccepteerd" || request.status === "Gesloten"}
                                         />
-                                        {errors[request.id]?.description && <p className="error-message">{errors[request.id].description}</p>}
+                                        {errorMessage[request.id]?.description &&
+                                            <p className="error-message">{errorMessage[request.id].description}</p>}
                                     </label>
                                     <label>
                                         <strong>Voorkeursdatum:</strong>
@@ -388,7 +423,8 @@ const MyRequests = () => {
                                             onChange={(e) => handleDateChange(request.id, e.target.value)}
                                             disabled={request.status === "Geaccepteerd" || request.status === "Gesloten"}
                                         />
-                                        {errors[request.id]?.date && <p className="error-message">{errors[request.id].date}</p>}
+                                        {errorMessage[request.id]?.date &&
+                                            <p className="error-message">{errorMessage[request.id].date}</p>}
                                     </label>
                                     <label>
                                         <strong>Categorie:</strong>
@@ -398,149 +434,97 @@ const MyRequests = () => {
                                             disabled={request.status === "Geaccepteerd" || request.status === "Gesloten"}
                                         >
                                             <option value={request.category}>{request.category}</option>
-                                            {categories.map((category) => (
-                                                <option key={category.id} value={category.name}>
-                                                    {category.name}
-                                                </option>
-                                            ))}
+                                            {categories.map((category) => (<option key={category.id}
+                                                                                   value={category.name}>{category.name}</option>))}
                                         </select>
-                                        {errors[request.id]?.category && <p className="error-message">{errors[request.id].category}</p>}
+                                        {errorMessage[request.id]?.category &&
+                                            <p className="error-message">{errorMessage[request.id].category}</p>}
                                     </label>
                                     {!(request.status === "Geaccepteerd" || request.status === "Gesloten") && (
-                                        <label>
-                                            <strong>Bestand toevoegen (max 5 MB):</strong>
-                                            <div className="file-upload">
-                                                <input
-                                                    type="file"
-                                                    id={`file-input-${request.id}`}
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => handleFileChange(request.id, e)}
-                                                />
-                                                <label htmlFor={`file-input-${request.id}`}>
-                                                    <img
-                                                        src={attachFileIcon}
-                                                        alt="Upload bestand"
-                                                        className="attach-file-icon"
-                                                        style={{ cursor: "pointer" }}
-                                                    />
-                                                </label>
-                                            </div>
-                                        </label>
-                                    )}
-                                    {request.status !== "Geaccepteerd" && request.status !== "Gesloten" && request.fileUrl && (
-                                        <button onClick={() => handleFileDelete(request.id)}>
-                                            <img src={Trash} alt="Verwijder bestand" />
-                                        </button>
-                                    )}
+                                        <section className="file-upload">
+                                            <input
+                                                type="file"
+                                                id={`file-input-${request.id}`}
+                                                style={{display: "none"}}
+                                                onChange={(e) => handleFileChange(request.id, e)}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="upload-file-button"
+                                                onClick={() => document.getElementById(`file-input-${request.id}`).click()}
+                                            >
+                                                <img src={attachFileIcon} alt="Upload bestand"
+                                                     className="attach-file-icon"/>
+                                                <span className="upload-file-text">Bestand toevoegen</span>
+                                            </button>
+                                        </section>)}
+                                    {successMessage && <p className="upload-file-message">{successMessage}</p>}
+                                    {errorMessage[request.id]?.file &&
+                                        <p className="error-message">{errorMessage[request.id].file}</p>}
                                     {request.fileUrl && (
-                                        <div>
-                                            <p>Bijgevoegd bestand:</p>
+                                        <label>
+                                            <p>Toegevoegd bestand:</p>
                                             <span>
-                                                {request.fileUrl && request.fileUrl.split('/').pop().length > 50 ? (
-                                                    <span>{request.fileUrl.split('/').pop().slice(0, 50)}...</span>
-                                                ) : (
-                                                    <span>{request.fileUrl.split('/').pop()}</span>
-                                                )}
+                                                {request.fileUrl.split('/').pop().length > 40 ? (
+                                                <span>{request.fileUrl.split('/').pop().slice(0, 40)}...</span>) : (
+                                                <span>{request.fileUrl.split('/').pop()}</span>)}
                                             </span>
-                                            {request.fileUrl.endsWith(".jpg") ||
-                                            request.fileUrl.endsWith(".jpeg") ||
-                                            request.fileUrl.endsWith(".png") ||
-                                            request.fileUrl.endsWith(".bmp") ? (
-                                                <p>Afbeeldingen kunnen niet worden weergegeven.</p>
-                                            ) : request.fileUrl.endsWith(".pdf") ? (
-                                                <iframe
-                                                    src={request.fileUrl}
-                                                    width="100%"
-                                                    height="500px"
-                                                    title="PDF Voorbeeld"
-                                                ></iframe>
-                                            ) : (
-                                                <a href={request.fileUrl} download>
-                                                    Download bestand
-                                                </a>
-                                            )}
-                                        </div>
-                                    )}
-                                    <aside className="aside-buttons">
-                                        {successMessage && <p className="update-message">{successMessage}</p>}
-                                        {request.status === "Open" && (
-                                            <div>
-                                                <Button variant="secondary"
-                                                        onClick={() => handleUpdateRequest(request.id)}>
-                                                    Hulpvraag bewerken
-                                                </Button>
-                                                <Button variant="tertiary"
-                                                        onClick={() => handleDeleteRequest(request.id)}>
-                                                    Hulpvraag verwijderen
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </aside>
-                                    {request.helper ? (
-                                        <aside className="helper-info">
+                                        </label>)}
+
+                                    {request.status !== "Geaccepteerd" && request.status !== "Gesloten" && request.fileUrl && (
+                                        <button className="delete-file-button"
+                                                onClick={() => handleFileDelete(request.id)}>
+                                            <img src={Trash} alt="Verwijder bestand"/>
+                                            <span className="delete-file-text">Toegevoegd bestand verwijderen</span>
+                                        </button>)}
+                                    {request.status === "Open" && (<div className="button-container">
+                                            <Button variant="secondary" onClick={() => handleUpdateRequest(request.id)}>
+                                                Hulpvraag bewerken
+                                            </Button>
+                                            <Button variant="tertiary" onClick={() => handleDeleteRequest(request.id)}>
+                                                Hulpvraag verwijderen
+                                            </Button>
+                                        </div>)}
+                                            {request.helper ? (<section className="helper-info">
                                             <p><strong>Geaccepteerd door Maatje:</strong> {request.helper.username}</p>
-                                            <p><strong>E-mail Adres:</strong> {request.helper.email}</p>
+                                            <p><strong>E-mailadres:</strong> {request.helper.email}</p>
                                             <p><strong>Telefoonnummer:</strong> {request.helper.phoneNumber}</p>
-                                            <strong>Beoordeling:</strong>
-                                            {request.helper.rating ? (
-                                                [...Array(5)].map((_, i) => (
-                                                    <img
-                                                        key={i}
-                                                        src={i < request.helper.rating ? starFilled : starUnfilled}
-                                                        alt="star"
-                                                        className="star-icon"
-                                                    />
-                                                ))
-                                            ) : (
-                                                <p><i>{request.helper.username} heeft nog geen beoordeling ontvangen.</i></p>
-                                            )}
-                                            {request.status.toLowerCase() === "gesloten" && (
+                                            <strong>Beoordeling Maatje:</strong>
+                                            <div className="rating-container">
+                                                {request.helper.rating ? ([...Array(5)].map((_, i) => (<img
+                                                            key={i}
+                                                            src={i < request.helper.rating ? starFilled : starUnfilled}
+                                                            alt="star"
+                                                            className="star-icon"
+                                                        />))) : (
+                                                    <p><i>{request.helper.username} heeft nog geen beoordeling
+                                                        ontvangen.</i></p>)}
+                                            </div>
+                                            {request.status.toLowerCase() === "gesloten" && !reviewSubmitted && (
                                                 <>
-                                                    <label>
-                                                        {successMessage && <p className="success-message">{successMessage}</p>}
+                                                    <label className="rating-label">
                                                         <strong>Geef een beoordeling:</strong>
                                                         <select
                                                             value={helperRatings[request.id] || ""}
                                                             onChange={(e) => handleRatingChange(request.id, e.target.value)}
                                                         >
                                                             <option value="">Kies een beoordeling</option>
-                                                            {[1, 2, 3, 4, 5].map((rating) => (
-                                                                <option key={rating} value={rating}>{rating} Sterren</option>
-                                                            ))}
+                                                            {[1, 2, 3, 4, 5].map((rating) => (<option key={rating}
+                                                                                                      value={rating}>{rating} Sterren</option>))}
                                                         </select>
                                                     </label>
                                                     <Button
                                                         variant="primary"
-                                                        onClick={() => {
-                                                            console.log("Request object:", request);
-                                                            console.log("Request requester:", request.requester);
-                                                            console.log("Request status:", request.status);
-
-                                                            if (request.helper && request.requester) {
-                                                                console.log("Review wordt ingediend...");
-                                                                handleSubmitReview(request.id, request.helper.id, request.requester.id);
-                                                            } else {
-                                                                console.error("Fout: Helper of requester is niet aanwezig", request);
-                                                            }
-                                                        }}
+                                                        onClick={() => handleSubmitReview(request.id, request.helper.id, request.requesterId)}
                                                         disabled={!helperRatings[request.id]}
                                                     >
                                                         Verstuur beoordeling
                                                     </Button>
-                                                </>
-                                            )}
-                                        </aside>
-                                    ) : (
-                                        <>
-                                            {request.status !== "Open" && !request.helper && (
-                                                <p>Er is geen maatje gekoppeld aan deze aanvraag.</p>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                        </li>
-                    ))}
+                                                </>)}
+                                        </section>) : (request.status !== "Open" && !request.helper &&
+                                        <p>Er is geen maatje gekoppeld aan deze aanvraag.</p>)}
+                                </article>)}
+                        </li>))}
                 </ul>
                 <nav className="pagination">
                     <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
@@ -553,9 +537,7 @@ const MyRequests = () => {
                 </nav>
             </section>
             <section className="upper-section">
-                <Button variant="primary" onClick={handleNavigateToNewRequest}>
-                    Nieuwe hulpvraag maken
-                </Button>
+                <Button variant="primary" onClick={handleNavigateToNewRequest}>Nieuwe hulpvraag maken</Button>
             </section>
         </>
     );

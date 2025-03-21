@@ -9,6 +9,8 @@ const RequestsOverview = () => {
     const [requests, setRequests] = useState([]);
     const [filters, setFilters] = useState({ category: "", city: "", sortBy: "" });
     const [expandedRequest, setExpandedRequest] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [succesMessage, setSuccesMessage] = useState("");
     const [acceptedRequests, setAcceptedRequests] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const requestsPerPage = 10;
@@ -18,24 +20,17 @@ const RequestsOverview = () => {
             try {
                 const token = localStorage.getItem("token");
                 const response = await axios.get("http://localhost:8080/api/requests", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    },
+                    headers: { "Authorization": `Bearer ${token}` },
                 });
 
-                console.log(response.data);
-
-                const updatedRequests = response.data.map((request) => {
-                    if (acceptedRequests[request.id]) {
-                        request.status = 'Geaccepteerd';
-                    }
-                    return request;
-                });
+                const updatedRequests = response.data.map((request) => ({
+                    ...request,
+                    status: acceptedRequests[request.id] ? "Geaccepteerd" : request.status,
+                }));
 
                 setRequests(updatedRequests);
-
-            } catch (error) {
-                console.error("Fout bij ophalen hulpvragen:", error);
+            } catch {
+                setErrorMessage("Fout bij ophalen hulpvragen.");
             }
         };
         fetchRequests();
@@ -87,14 +82,37 @@ const RequestsOverview = () => {
             setRequests((prevRequests) =>
                 prevRequests.map((request) =>
                     request.id === id
-                        ? { ...request, status: 'Geaccepteerd' }
+                        ? { ...request, status: "Geaccepteerd" }
                         : request
                 )
             );
+        } catch {
+            setErrorMessage("Fout bij het accepteren van de hulpvraag.");
+            setSuccesMessage("");
+        }
+    };
 
-        } catch (error) {
-            console.error("Er is een fout opgetreden:", error);
-            alert("Fout bij het accepteren van de request.");
+
+    const handleDownloadFile = async (fileUrl) => {
+        try {
+            const token = localStorage.getItem("token");
+            const fileName = fileUrl.split("/").pop();
+
+            const response = await axios.get(`http://localhost:8080/downloadFromDB/${fileName}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: "arraybuffer",
+            });
+
+            const blob = new Blob([response.data], { type: "application/octet-stream" });
+            const downloadUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(downloadUrl);
+        } catch {
+            setErrorMessage("Fout bij het downloaden van het bestand.");
         }
     };
 
@@ -122,16 +140,14 @@ const RequestsOverview = () => {
                     <option value="desc">Datum aflopend</option>
                 </select>
             </div>
-            <ul className="requests-list" style={{ listStyleType: "none" }}>
+            <ul className="requests-list">
                 {filteredRequests.length > 0 ? (
                     filteredRequests.map((request) => (
                         <li key={request.id} className="request-item">
                             <button className="request-summary" onClick={() => toggleExpand(request.id)}>
                                 <span className="request-summary-title"><strong>Titel:</strong> {request.title}</span>
-                                <span
-                                    className="request-summary-status"><strong>Status:</strong> {request.status}</span>
-                                <span
-                                    className="request-summary-date"><strong>Voorkeursdatum:</strong> {formatDate(request.preferredDate)}</span>
+                                <span className="request-summary-status"><strong>Status:</strong> {request.status}</span>
+                                <span className="request-summary-date"><strong>Voorkeursdatum:</strong> {formatDate(request.preferredDate)}</span>
                             </button>
                             {expandedRequest === request.id && (
                                 <div className="request-details">
@@ -139,12 +155,19 @@ const RequestsOverview = () => {
                                     <p><strong>Stad:</strong> {request.city}</p>
                                     <p><strong>Datum:</strong> {new Date(request.preferredDate).toLocaleDateString()}</p>
                                     <p><strong>Beschrijving:</strong> {request.description}</p>
-                                    {acceptedRequests[request.id] &&
-                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen. Je contactgegevens zijn gedeeld met de aanvrager.</p>}
+                                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                                    {succesMessage && <p className="success-message">{succesMessage}</p>}
+                                    {acceptedRequests[request.id] && (
+                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen. Je contactgegevens zijn gedeeld met de aanvrager.</p>
+                                    )}
                                     {request.status === 'Open' && !acceptedRequests[request.id] && (
-                                        <Button className="button-primary" onClick={() => handleAcceptRequest(request.id)}
-                                                disabled={acceptedRequests[request.id]}>
+                                        <Button className="button-primary" onClick={() => handleAcceptRequest(request.id)}>
                                             Accepteer hulpvraag
+                                        </Button>
+                                    )}
+                                    {request.fileUrl && (
+                                        <Button className="button-secondary" onClick={() => handleDownloadFile(request.fileUrl)}>
+                                            Download bestand
                                         </Button>
                                     )}
                                 </div>

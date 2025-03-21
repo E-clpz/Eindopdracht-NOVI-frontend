@@ -34,6 +34,7 @@
     border-radius: 5px;
     border: 1px solid var(--color-black);
     font-size: 16px;
+    background-color: var(--color-sand);
 }
 
 .requests-form select {
@@ -44,28 +45,58 @@
     height: 100px;
 }
 
+.file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    width: auto;
+    padding: 0;
+}
+
 .file-upload-container {
     display: flex;
     align-items: center;
-}
-
-.file-upload-container input[type="file"] {
-    display: none;
+    width: auto;
 }
 
 .file-upload-container img {
-    cursor: pointer;
-    width: 20px;
-    margin-left: 10px;
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
 }
 
-.file-upload-container span {
-    margin-left: 10px;
+.file-upload-text {
     font-size: 16px;
 }
 
-.file-upload-container img:last-child {
-    margin-left: 20px;
+input[type="file"] {
+    display: none;
+}
+
+.file-upload-container input[type="file"]:checked {
+    width: 30px;
+}
+
+.requests-form .file-upload {
+    width: auto;
+}
+
+.file-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.file-delete-text {
+    font-size: 16px;
+}
+
+.file-actions img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin: 8px;
 }
 
 .error-message,
@@ -78,8 +109,12 @@
 
 .error-message {
     color: var(--color-brown);
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
 }
 
 .success-message {
-    color: var(--color-orange-dark);
+    color: green;
+    font-weight: bold;
 }
