@@ -9,29 +9,30 @@ import Requests from "./pages/requestsPage/Requests.jsx";
 import Profile from "./pages/profilePage/Profile.jsx";
 import MyRequests from "./pages/myRequestsPage/MyRequests.jsx";
 import RequestsOverview from "./pages/requestsOverviewPage/RequestsOverview.jsx";
+import {AuthProvider} from "./context/AuthContext.jsx";
 
 function App() {
 
-  return (
-    <>
-        <Navigation/>
-        <main>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/signIn" element={<SignIn/>} />
-                <Route path="/signUp" element={<SignUp />} />
-                <Route path="/requests" element={<Requests />} />
-                <Route path="/requests/myrequests" element={<MyRequests />} />
-                <Route path="/profile" element={<Profile/>} />
-                <Route path="/requests/overview" element={<RequestsOverview/>} />
-                <Route path="*" element={<NotFound/>}/>
-            </Routes>
-        </main>
-        <footer className="footer">
-            MatchMaatje &copy; 2025 - ontwikkeld door Rob Arentz
-        </footer>
-    </>
-  )
+    return (<>
+            <AuthProvider>
+                <Navigation/>
+                <main>
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/signIn" element={<SignIn/>}/>
+                        <Route path="/signUp" element={<SignUp/>}/>
+                        <Route path="/requests" element={<Requests/>}/>
+                        <Route path="/requests/myrequests" element={<MyRequests/>}/>
+                        <Route path="/profile" element={<Profile/>}/>
+                        <Route path="/requests/overview" element={<RequestsOverview/>}/>
+                        <Route path="*" element={<NotFound/>}/>
+                    </Routes>
+                </main>
+                <footer className="footer">
+                    MatchMaatje &copy; 2025 - ontwikkeld door Rob Arentz
+                </footer>
+            </AuthProvider>
+        </>)
 }
 
 export default App

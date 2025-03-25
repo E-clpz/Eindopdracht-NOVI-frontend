@@ -98,7 +98,7 @@ function Requests() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFormErrors({});
-        setSuccessMessage("");  // Reset success message when submitting again
+        setSuccessMessage("");
 
         if (!validateInput()) {
             return;

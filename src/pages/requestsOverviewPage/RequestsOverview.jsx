@@ -158,7 +158,7 @@ const RequestsOverview = () => {
                                     {errorMessage && <p className="error-message">{errorMessage}</p>}
                                     {succesMessage && <p className="success-message">{succesMessage}</p>}
                                     {acceptedRequests[request.id] && (
-                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen. Je contactgegevens zijn gedeeld met de aanvrager.</p>
+                                        <p className="accepted-message">Deze hulpvraag is aan jou toegewezen. Je contactgegevens zijn zichtbaar voor de aanvrager.</p>
                                     )}
                                     {request.status === 'Open' && !acceptedRequests[request.id] && (
                                         <Button className="button-primary" onClick={() => handleAcceptRequest(request.id)}>

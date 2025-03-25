@@ -5,10 +5,12 @@ import Button from "../../components/button/Button.jsx";
 import "./SignIn.css";
 import logo from "../../assets/Logo MaatjesMatch Big.png";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { useAuth} from "../../context/AuthContext.jsx";
 
 const SignIn = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         identifier: "",
@@ -16,7 +18,6 @@ const SignIn = () => {
     });
 
     const [success, setSuccess] = useState("");
-
     const [error, setError] = useState("");
 
     function handleChange(e) {
@@ -42,11 +43,10 @@ const SignIn = () => {
 
             if (token) {
                 const bearerToken = token.startsWith("Bearer ") ? token.split(" ")[1] : token;
-                localStorage.setItem("token", bearerToken);
-
                 const decodedToken = jwtDecode(bearerToken);
                 const role = decodedToken.roles ? decodedToken.roles[0] : 'undefined';
-                localStorage.setItem("role", role);
+
+                login(bearerToken, role);
 
                 if (role === "ROLE_REQUESTER") {
                     navigate("/requests/myrequests");

@@ -1,23 +1,13 @@
 import './Navigation.css';
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
 import LogoSmall from '../../assets/Logo MaatjesMatch Small.png';
 import Button from "../button/Button.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 function Navigation() {
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-
-    useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem("token"));
-    }, [location]);
-
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        setIsLoggedIn(false);
-        navigate("/signIn");
-    };
 
     return (
         <nav className="nav-outer-container">
@@ -30,62 +20,37 @@ function Navigation() {
                     <p>Persoonlijk contact op een innovatieve manier</p>
                 </div>
                 <ul className="nav-links">
-                    <li>
-                        <Button
-                            type="button"
-                            variant="primary"
-                            className={`button-primary ${location.pathname === '/' ? 'active' : ''}`}
-                            onClick={() => navigate('/')}
-                        >
-                            Home
-                        </Button>
-                    </li>
-                    {isLoggedIn ? (
+                    {user && (
+                        <li>
+                            <Button
+                                type="button"
+                                variant="primary"
+                                className={`button-primary ${location.pathname === '/profile' ? 'active' : ''}`}
+                                onClick={() => navigate('/profile')}
+                            >
+                                Profiel
+                            </Button>
+                        </li>
+                    )}
+                    {!user ? (
                         <>
                             <li>
-                                <Button
-                                    type="button"
-                                    variant="primary"
-                                    className={`button-primary ${location.pathname === '/profile' ? 'active' : ''}`}
-                                    onClick={() => navigate('/profile')}
-                                >
-                                    Profiel
-                                </Button>
-                            </li>
-                            <li>
-                                <Button
-                                    type="button"
-                                    variant="primary"
-                                    className="button-primary"
-                                    onClick={handleLogout}
-                                >
-                                    Uitloggen
-                                </Button>
-                            </li>
-                        </>
-                    ) : (
-                        <>
-                            <li>
-                                <Button
-                                    type="button"
-                                    variant="primary"
-                                    className={`button-primary ${location.pathname === '/signIn' ? 'active' : ''}`}
-                                    onClick={() => navigate('/signIn')}
-                                >
+                                <Button type="button" variant="primary" onClick={() => navigate('/signIn')}>
                                     Inloggen
                                 </Button>
                             </li>
                             <li>
-                                <Button
-                                    type="button"
-                                    variant="primary"
-                                    className={`button-primary ${location.pathname === '/signUp' ? 'active' : ''}`}
-                                    onClick={() => navigate('/signUp')}
-                                >
+                                <Button type="button" variant="primary" onClick={() => navigate('/signUp')}>
                                     Inschrijven
                                 </Button>
                             </li>
                         </>
+                    ) : (
+                        <li>
+                            <Button type="button" variant="secondary" onClick={logout}>
+                                Uitloggen
+                            </Button>
+                        </li>
                     )}
                 </ul>
             </div>
